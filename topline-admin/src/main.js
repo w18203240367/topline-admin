@@ -10,7 +10,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.less'
 // 引入bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
-
+// 引入进度条
+import 'nprogress/nprogress.css'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 

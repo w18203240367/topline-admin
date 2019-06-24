@@ -13,8 +13,10 @@
       @close="handleClose"
       background-color="#545c64"
       text-color="#fff"
-      active-text-color="#ffd04b">
-      <el-menu-item index="2">
+      active-text-color="#ffd04b"
+      :router='true'
+      >
+      <el-menu-item index="/">
         <i class="iconfont icon-shouye"></i>
         <span slot="title">首页</span>
       </el-menu-item>
@@ -24,7 +26,7 @@
           <span>内容管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="1-1"><i class="iconfont icon-cehuifabuwenjian"></i>发布文件</el-menu-item>
+          <el-menu-item index="/publish"><i class="iconfont icon-cehuifabuwenjian"></i>发布文件</el-menu-item>
           <el-menu-item index="1-2"><i class="iconfont icon-weibiaoti2010101"></i>内容列表</el-menu-item>
           <el-menu-item index="1-3"><i class="iconfont icon-pinglunguanli"></i>评论管理</el-menu-item>
           <el-menu-item index="1-4"><i class="iconfont icon-sucaiguanli"></i>素材管理</el-menu-item>

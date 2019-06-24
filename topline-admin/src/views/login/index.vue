@@ -40,6 +40,7 @@
 <script>
 import axios from 'axios'
 import '@/vendor/gt.js'// 引入极验 jsSKD文件通过该 window.initGeetest 使用
+import { saveUser } from '@/utils/auth' // 按需加载 加载模块中 非export default 成员
 const initCodeTimeSeconds = 60
 
 export default {
@@ -90,7 +91,8 @@ export default {
         data: this.form
       }).then(res => {
         const userInfo = res.data.data
-        window.localStorage.setItem('user_info', JSON.stringify(userInfo))
+        // window.localStorage.setItem('user_info', JSON.stringify(userInfo))
+        saveUser(userInfo)
         this.$message({
           message: '恭喜你，登录成功',
           type: 'success'
