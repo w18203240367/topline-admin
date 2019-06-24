@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 // 引入 路由
-import router from './router/router'
+import router from './router'
 // 引入 element-ul
 import ElementUI from 'element-ui'
 
