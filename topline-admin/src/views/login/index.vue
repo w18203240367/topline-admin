@@ -41,6 +41,7 @@
 import axios from 'axios'
 import '@/vendor/gt.js'// 引入极验 jsSKD文件通过该 window.initGeetest 使用
 import { saveUser } from '@/utils/auth' // 按需加载 加载模块中 非export default 成员
+import initGeetest from '@/utils/init-geetest'
 const initCodeTimeSeconds = 60
 
 export default {
@@ -84,12 +85,14 @@ export default {
         this.submitLogin()
       })
     },
-    submitLogin () {
-      axios({
-        method: 'POST',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
-        data: this.form
-      }).then(res => {
+    // async await 优化
+    async submitLogin () {
+      try {
+        const res = await axios({
+          method: 'POST',
+          url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+          data: this.form
+        })
         const userInfo = res.data.data
         // window.localStorage.setItem('user_info', JSON.stringify(userInfo))
         saveUser(userInfo)
@@ -100,9 +103,9 @@ export default {
         this.$router.push({
           name: 'home'
         })
-      }).catch((e) => {
+      } catch (err) {
         this.$message.error('登陆失败,手机号或手机验证码错误')
-      })
+      }
     },
     // 获取验证码
     handleSendCode () {
@@ -116,47 +119,43 @@ export default {
       })
     },
     // 验证通过 初始化显示人机交互验证码
-    showGeetest () {
+    async showGeetest () {
       const { mobile } = this.form
-      axios({
+      const res = await axios({
         methos: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
-      }).then(res => {
-        const { data } = res.data
-        window.initGeetest({ // 以下配置参数来自服务端 SDK
-          gt: data.gt,
-          challenge: data.challenge,
-          offline: !data.success,
-          new_captcha: data.new_captcha,
-          product: 'bind'
-        }, captchaObj => {
-          // 这里可以调用验证实例 captchaObj 的实例方法 验证对象
-          captchaObj.onReady(() => {
-            // 验证码ready之后才能调用verify方法显示验证码
-            captchaObj.verify() // 弹出验证码内容框
-          }).onSuccess(() => {
-            // your code
-            // console.log(captchaObj.getValidate()) // 可以得到 验证成功后的数据
-            const { geetest_challenge: challenge, geetest_seccode: seccode, geetest_validate: validate } = captchaObj.getValidate()
-            axios({
-              method: 'GET',
-              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
-              params: {
-                challenge,
-                validate,
-                seccode
-              }
-            }).then(res => {
-              // 发送短信成功开始倒计时
-              this.codeCountDown()
-            })
-          }).onError(function () {
-            // your code
-          })
-        })
-        // 在这里注册“发送验证码” 按钮的点击事件然后验证用户是否输入手机号以及手机号是否有效，格式是是否正确
-        // 调用captchaObj.verify
       })
+      const { data } = res.data
+      const captchaObj = await initGeetest({ // 以下配置参数来自服务端 SDK
+        gt: data.gt,
+        challenge: data.challenge,
+        offline: !data.success,
+        new_captcha: data.new_captcha,
+        product: 'bind'
+      })
+      // 这里可以调用验证实例 captchaObj 的实例方法 验证对象
+      captchaObj.onReady(() => {
+        // 验证码ready之后才能调用verify方法显示验证码
+        captchaObj.verify() // 弹出验证码内容框
+      }).onSuccess(async () => {
+        // your code
+        // console.log(captchaObj.getValidate()) // 可以得到 验证成功后的数据
+        const { geetest_challenge: challenge, geetest_seccode: seccode, geetest_validate: validate } = captchaObj.getValidate()
+        // 发送短信
+        await axios({
+          method: 'GET',
+          url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+          params: {
+            challenge,
+            validate,
+            seccode
+          }
+        })
+        // 发送短信成功开始倒计时
+        this.codeCountDown()
+      })
+      // 在这里注册“发送验证码” 按钮的点击事件然后验证用户是否输入手机号以及手机号是否有效，格式是是否正确
+      // 调用captchaObj.verify
     },
     // 设置倒计时
     codeCountDown () {
