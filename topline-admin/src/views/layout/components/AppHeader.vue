@@ -1,7 +1,7 @@
 <template>
   <div>
       <el-row>
-        <el-col :span="9" :offset='1'><div class="grid-content bg-purple-dark">宇宙市地球村中国哈利波特有限公司</div></el-col>
+        <el-col :span="9"><div class="grid-content bg-purple-dark"><i class="iconfont icon-liebiao2"></i> 宇宙市地球村中国哈利波特有限公司</div></el-col>
         <el-col :span="7" :offset='5'>
           <div class="grid-content bg-purple-dark">
             <el-dropdown :hide-on-click="false">

@@ -23,7 +23,7 @@
           </el-col>
           <el-col :span='9' :offset='1'>
               <!-- <el-button @click='handleSendCode'>获取验证码</el-button> -->
-              <el-button @click='handleSendCode' :disabled="!!codeTimer">{{ codeTimer ? `剩余${codeTimeSeconds}秒` : '获取验证码' }}</el-button>
+              <el-button :loading="codeLoading" @click='handleSendCode' :disabled="!!codeTimer">{{ codeTimer ? `剩余${codeTimeSeconds}秒` : '获取验证码' }}</el-button>
           </el-col>
         </el-form-item>
         <el-form-item prop='agree' class="agree">
@@ -31,7 +31,7 @@
           <span class="agree-text">我已阅读并同意<a href="#">用户协议</a>和<a href="#">隐私条款</a></span>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleLogin" class="btn-login">登录</el-button>
+          <el-button type="primary" @click="handleLogin" class="btn-login" :loading="loadingLogin">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -70,7 +70,9 @@ export default {
         ]
       },
       codeTimer: null, // 倒计时定时器
-      codeTimeSeconds: initCodeTimeSeconds // 倒计时时间
+      codeTimeSeconds: initCodeTimeSeconds, // 倒计时时间
+      loadingLogin: false, // 登录中 loading
+      codeLoading: false
     }
   },
 
@@ -87,13 +89,13 @@ export default {
     },
     // async await 优化
     async submitLogin () {
+      this.loadingLogin = true
       try {
-        const res = await axios({
+        const userInfo = await this.$http({
           method: 'POST',
-          url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+          url: `/authorizations`,
           data: this.form
         })
-        const userInfo = res.data.data
         // window.localStorage.setItem('user_info', JSON.stringify(userInfo))
         saveUser(userInfo)
         this.$message({
@@ -106,6 +108,7 @@ export default {
       } catch (err) {
         this.$message.error('登陆失败,手机号或手机验证码错误')
       }
+      this.loadingLogin = false
     },
     // 获取验证码
     handleSendCode () {
@@ -120,12 +123,13 @@ export default {
     },
     // 验证通过 初始化显示人机交互验证码
     async showGeetest () {
-      const { mobile } = this.form
-      const res = await axios({
+      try {
+        this.codeLoading = true
+        const { mobile } = this.form
+        const data = await axios({
         methos: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+        url: `/authorizations/${mobile}`
       })
-      const { data } = res.data
       const captchaObj = await initGeetest({ // 以下配置参数来自服务端 SDK
         gt: data.gt,
         challenge: data.challenge,
@@ -133,29 +137,39 @@ export default {
         new_captcha: data.new_captcha,
         product: 'bind'
       })
-      // 这里可以调用验证实例 captchaObj 的实例方法 验证对象
+        // 这里可以调用验证实例 captchaObj 的实例方法 验证对象
       captchaObj.onReady(() => {
+        this.codeLoading = false
         // 验证码ready之后才能调用verify方法显示验证码
         captchaObj.verify() // 弹出验证码内容框
       }).onSuccess(async () => {
-        // your code
-        // console.log(captchaObj.getValidate()) // 可以得到 验证成功后的数据
-        const { geetest_challenge: challenge, geetest_seccode: seccode, geetest_validate: validate } = captchaObj.getValidate()
-        // 发送短信
-        await axios({
-          method: 'GET',
-          url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
-          params: {
-            challenge,
-            validate,
-            seccode
-          }
+        try {
+          // your code
+          // console.log(captchaObj.getValidate()) // 可以得到 验证成功后的数据
+          const { geetest_challenge: challenge, geetest_seccode: seccode, geetest_validate: validate } = captchaObj.getValidate()
+          // 发送短信
+          await axios({
+            method: 'GET',
+            url: `/authorizations/${mobile}`,
+            params: {
+              challenge,
+              validate,
+              seccode
+            }
         })
         // 发送短信成功开始倒计时
         this.codeCountDown()
-      })
-      // 在这里注册“发送验证码” 按钮的点击事件然后验证用户是否输入手机号以及手机号是否有效，格式是是否正确
-      // 调用captchaObj.verify
+        // 在这里注册“发送验证码” 按钮的点击事件然后验证用户是否输入手机号以及手机号是否有效，格式是是否正确
+        // 调用captchaObj.verify
+        } catch (err) {
+          this.$message.error('获取验证码失败'),
+          this.codeLoading = false
+      }
+    })
+    } catch (err) {
+      this.$message.error('获取验证码失败')
+      this.codeLoading = false
+    }
     },
     // 设置倒计时
     codeCountDown () {
