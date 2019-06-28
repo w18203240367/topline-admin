@@ -170,7 +170,7 @@ export default {
       // console.log(item.id.toString())
       try {
         // 删除确认提示
-       await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
