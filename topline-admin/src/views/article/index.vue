@@ -92,9 +92,9 @@
       <el-table-column
         prop="address"
         label="操作">
-        <template>
+        <template slot-scope= "scope">
           <el-button type="warning" size="mini" plain>修改</el-button>
-          <el-button type="danger" size="mini" plain>删除</el-button>
+          <el-button type="danger" size="mini" plain @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -166,8 +166,12 @@ export default {
     this.loadChannels()
   },
   methods: {
+    handleDelete (item) {
+      console.log(item.id.toString())
+      // console.log(123)
+    },
     handleFilter () {
-      this.page = 1, // 查询从第一页加载数据
+      this.page = 1 // 查询从第一页加载数据
       // 根据查询按钮，根据表单中的数据查询列表
       this.loadArtucles()
     },
@@ -185,7 +189,7 @@ export default {
         // console.log(data)
         this.channels = data.channels
       } catch (err) {
-        console.log(err)
+        // console.log(err)
         this.$message.error('获取频道数据错误')
       }
     },
@@ -239,3 +243,20 @@ export default {
   margin-top: 20px;
 }
 </style>
+
+<!--
+  删除功能：
+    程序中的数据，id 和服务端返回的原始数据id不一致
+    原因：是该数据id 超出了JaveScript 的安全整数范围，无法精确表示，会出现偏差
+    JavaScript 最大能表示的安全整数范围是：Number.Max_SAFE_INTEGER 9007199254740991
+    例：1144457452637388800  超出了 9007199254740991 JavaScript 无法安全表示
+
+  解决：
+    我们可以使用一个第三方包， json-bigint，配置 axios 手动解析后端返回的JSON 格式数据
+    axios 解析完的对象中的数据已经有问题了
+    对于这种问题，axios 给你提供一个API 可以手动解析原始数据
+    我们可以在 axios 提供的那个 API 中使用，json-bigint 去解析含有超出安全整数范围的json 内容数据
+
+    他会将json 格式 转为JavaScript 对象他会自动判断内容数据是否超出安全整数范围，自动处理成其他格式
+    JSON.parse(json)
+-->

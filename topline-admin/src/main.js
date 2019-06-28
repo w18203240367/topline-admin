@@ -15,6 +15,8 @@ import 'nprogress/nprogress.css'
 
 import { getUser, removeUser } from '@/utils/auth'
 
+import JSONbig from 'json-bigint'
+
 import axios from 'axios'
 Vue.use(ElementUI)
 
@@ -24,9 +26,34 @@ Vue.use(ElementUI)
 axios.defaults.baseURL = `http://ttapi.research.itcast.cn/mp/v1_0`
 
 /**
+ * axios 预留的自定义处理后端返回的原始数据
+ * 可以理解成是一个响应拦截器这个比较特殊
+ * 这里的data是后端返回的未经处理的原始数据
+ * axios 默认使用JSON.parse 去转换原始数据，如果期货在那个有超出安全整数范围的数据就有问题
+ * 所以 我们在这里可以手动 处理原始数据
+ *  npm i json-bigint
+*/
+
+axios.defaults.transformResponse = [function (data) {
+  // console.log('transformResponse =>' + data)
+  // 这里使用 JSONbig.parse 转换原始数据
+  // 类似于 JSON.parse
+  // 但是它会处理其中超出安全整数范围的整数问题。
+  // 严谨一点，如果 data 不是json 格式字符串就会报错
+  try {
+    // 如果 是json 格式字符串，就会转回并返回后续代码使用
+    return JSONbig.parse(data)
+  } catch (err) {
+    // 报错意味着 data 不是json 格式字符串， 这里就直接原样返回后续使用
+    return data
+  }
+}]
+
+/**
  * axios 请求拦截器：axios 发出去的请求会先经过这里
  * return config 允许请求发送的开关
  * config 是本次请求相关的配置对象
+ * axios 默认使用JSON.parse 去转换原始数据，如果其中有超出
  */
 axios.interceptors.request.use(config => {
   const user = getUser()
