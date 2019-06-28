@@ -127,30 +127,30 @@ export default {
         this.codeLoading = true
         const { mobile } = this.form
         const data = await axios({
-        methos: 'GET',
-        url: `/authorizations/${mobile}`
-      })
-      const captchaObj = await initGeetest({ // 以下配置参数来自服务端 SDK
-        gt: data.gt,
-        challenge: data.challenge,
-        offline: !data.success,
-        new_captcha: data.new_captcha,
-        product: 'bind'
-      })
+          method: 'GET',
+          url: `/captchas/${mobile}`
+        })
+        const captchaObj = await initGeetest({ // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: data.new_captcha,
+          product: 'bind'
+        })
         // 这里可以调用验证实例 captchaObj 的实例方法 验证对象
-      captchaObj.onReady(() => {
-        this.codeLoading = false
-        // 验证码ready之后才能调用verify方法显示验证码
-        captchaObj.verify() // 弹出验证码内容框
-      }).onSuccess(async () => {
-        try {
-          // your code
-          // console.log(captchaObj.getValidate()) // 可以得到 验证成功后的数据
+        captchaObj.onReady(() => {
+          this.codeLoading = false
+          // 验证码ready之后才能调用verify方法显示验证码
+          captchaObj.verify() // 弹出验证码内容框
+        }).onSuccess(async () => {
+          try {
+            // your code
+            // console.log(captchaObj.getValidate()) // 可以得到 验证成功后的数据
           const { geetest_challenge: challenge, geetest_seccode: seccode, geetest_validate: validate } = captchaObj.getValidate()
           // 发送短信
-          await axios({
+        await axios({
             method: 'GET',
-            url: `/authorizations/${mobile}`,
+            url: `/sms/codes/${mobile}`,
             params: {
               challenge,
               validate,
@@ -164,27 +164,27 @@ export default {
         } catch (err) {
           this.$message.error('获取验证码失败'),
           this.codeLoading = false
-      }
-    })
-    } catch (err) {
-      this.$message.error('获取验证码失败')
-      this.codeLoading = false
-    }
-    },
-    // 设置倒计时
-    codeCountDown () {
-      this.codeTimer = window.setInterval(() => {
-        this.codeTimeSeconds--
-        if (this.codeTimeSeconds <= 0) {
-          // 清除定时器
-          window.clearInterval(this.codeTimer)
-          // 同时让倒计时的时间回归初始状态
-          this.codeTimeSeconds = initCodeTimeSeconds
-          this.codeTimer = null // 将存储定时器引用的变量重新赋值为 null
         }
-      }, 1000)
-    }
+      })
+  } catch (err) {
+    this.$message.error('获取验证码失败')
+  this.codeLoading = false
   }
+  },
+  // 设置倒计时
+  codeCountDown () {
+    this.codeTimer = window.setInterval(() => {
+      this.codeTimeSeconds--  // 计时器每秒减1
+      if (this.codeTimeSeconds <= 0) {
+        // 清除定时器
+        window.clearInterval(this.codeTimer)
+        // 同时让倒计时的时间回归初始状态
+        this.codeTimeSeconds = initCodeTimeSeconds
+        this.codeTimer = null // 将存储定时器引用的变量重新赋值为 null
+      }
+    }, 1000)
+  }
+}
 }
 </script>
 
