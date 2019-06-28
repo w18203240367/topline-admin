@@ -26,6 +26,7 @@ Vue.use(ElementUI)
 axios.defaults.baseURL = `http://ttapi.research.itcast.cn/mp/v1_0`
 
 /**
+ * 如何解决后端返回来的数据超出安全证书范围的问题？
  * axios 预留的自定义处理后端返回的原始数据
  * 可以理解成是一个响应拦截器这个比较特殊
  * 这里的data是后端返回的未经处理的原始数据

@@ -166,9 +166,44 @@ export default {
     this.loadChannels()
   },
   methods: {
-    handleDelete (item) {
-      console.log(item.id.toString())
-      // console.log(123)
+    async handleDelete (item) {
+      // console.log(item.id.toString())
+      try {
+        // 删除确认提示
+       await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+
+        // 如果手动 catch 他的异常 还是会被外部的try-catch 捕获
+        // 但是代码依然可以继续往下执行
+        // .catch(() => {
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消删除'
+        //   })
+        // })
+        // 确认执行删除操作
+        await this.$http({
+          method: 'DELETE',
+          url: `/articles/${item.id}`
+        })
+        this.$message({
+          type: 'success',
+          message: '删除成功'
+        })
+        // 数据列表更新
+        this.loadArtucles()
+      } catch (err) {
+        if (err === 'cancel') {
+          return this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        }
+        this.$message.error('删除失败')
+      }
     },
     handleFilter () {
       this.page = 1 // 查询从第一页加载数据
@@ -194,32 +229,36 @@ export default {
       }
     },
     async loadArtucles () {
-      // 请求开始 加载loading
-      this.articleLoading = true
-      // 除了登录相关接口之外，其他接口都必须在请求头中通过 Authorization 字段 提供用户token
-      // 当我们登录成功，服务端会生成一个token 令牌 放到用户信息中
-      // 去除无用数据
-      const filterData = {}
-      for (let key in this.filterParams) {
-        const item = this.filterParams[key]
-        if (item !== null && item !== undefined && item !== '') {
-          filterData[key] = item
+      try {
+        // 请求开始 加载loading
+        this.articleLoading = true
+        // 除了登录相关接口之外，其他接口都必须在请求头中通过 Authorization 字段 提供用户token
+        // 当我们登录成功，服务端会生成一个token 令牌 放到用户信息中
+        // 去除无用数据
+        const filterData = {}
+        for (let key in this.filterParams) {
+          const item = this.filterParams[key]
+          if (item !== null && item !== undefined && item !== '') {
+            filterData[key] = item
+          }
         }
-      }
-      const data = await this.$http({
-        method: 'GET',
-        url: '/articles',
-        params: {
-          page: this.page, // 页码
-          per_page: this.pageSize, // 每页数据
-          ...filterData // 将filterData 混入当前对象中（对象混入语法）
-        }
-      })
-      this.articles = data.results
-      this.totalCount = data.total_count
+        const data = await this.$http({
+          method: 'GET',
+          url: '/articles',
+          params: {
+            page: this.page, // 页码
+            per_page: this.pageSize, // 每页数据
+            ...filterData // 将filterData 混入当前对象中（对象混入语法）
+          }
+        })
+        this.articles = data.results
+        this.totalCount = data.total_count
 
-      // 请求结束 停止loading
-      this.articleLoading = false
+        // 请求结束 停止loading
+        this.articleLoading = false
+      } catch (err) {
+        this.$message.error('加载列表失败')
+      }
     },
     handleCurrentChange (page) {
       // console.log(page)
