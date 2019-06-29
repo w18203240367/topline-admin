@@ -8,14 +8,22 @@
         </div>
     </div>
     <el-row>
-      <el-col :span="12">
+      <el-col :span="24">
         <!-- 表单 -->
         <el-form ref="form" :model="articleForm" label-width="80px">
           <el-form-item label="标题">
             <el-input v-model="articleForm.title"></el-input>
           </el-form-item>
           <el-form-item label="内容">
-            <el-input type="textarea" v-model="articleForm.content"></el-input>
+            <!--
+                @blur="onEditorBlur($event)"     失去焦点的时候
+                @focus="onEditorFocus($event)"   聚焦的时候
+                @ready="onEditorReady($event)"    富文本渲染注册好的是偶
+             -->
+            <quill-editor v-model="articleForm.content"
+                ref="myQuillEditor"
+                :options="editorOption">
+              </quill-editor>
           </el-form-item>
           <el-form-item label="封面">
             <!-- <el-radio-group v-model="form.resource">
@@ -53,10 +61,19 @@
 
 <script>
 import ArticleChannel from '@/components/article-channel'
+// 富文本编辑器css
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import './quill.user.css'
+// 富文本编辑器
+import { quillEditor } from 'vue-quill-editor'
+
 export default {
   name: 'publish',
   components: {
-    ArticleChannel
+    ArticleChannel,
+    quillEditor
   },
   data () {
     return {
@@ -67,27 +84,62 @@ export default {
           type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
           images: [] //
         },
-        channel_id: 3 // 频道
-      }
+        channel_id: '' // 频道
+      },
+      editorOption: {} // 富文本绑定的数据
+    }
+  },
+  created () {
+    if (this.$route.name === 'publish-edit') {
+      this.loadArticle()
     }
   },
   methods: {
-    async handlePublish (draft) {
+    async loadArticle () {
       try {
-        await this.$http({
-          method: 'POST',
-          url: '/articles',
-          params: { // Query 参数 使用params 传入
-            draft
-          },
-          data: this.articleForm
+        const data = await this.$http({
+          method: 'GET',
+          url: `/articles/${this.$route.params.id}`
         })
-        this.$message({
-          type: 'success',
-          message: '发布成功'
-        })
+        this.articleForm = data
       } catch (err) {
-        this.$message.error('发布失败', err)
+        this.$message.error('获取文章失败')
+      }
+    },
+    async handlePublish (draft) {
+      // 执行添加操作
+      try {
+        if (this.$route.name === 'publish') {
+          await this.$http({
+            method: 'POST',
+            url: '/articles',
+            params: {
+              // Query 参数 使用params 传入
+              draft
+            },
+            data: this.articleForm
+          })
+          this.$message({
+            type: 'success',
+            message: '发布成功'
+          })
+        } else {
+            // 执行修改操作
+            await this.$http({
+              method: 'PUT',
+              url: `/articles/${this.$route.params.id}`,
+              params: { // Query 参数 使用params 传入
+                draft
+              },
+              data: this.articleForm
+            })
+            this.$message({
+              type: 'success',
+              message: '修改成功'
+            })
+          }
+      } catch (error) {
+        this.$message.error('操作错误')
       }
     }
   }
@@ -103,5 +155,4 @@ export default {
     align-items: center;
   }
 }
-
 </style>
