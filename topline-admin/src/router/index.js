@@ -23,19 +23,34 @@ const router = new Router({
           component: () => import('@/views/home')
         },
         {
+          // 发布文章
           name: 'publish',
           path: '/publish',
           component: () => import('@/views/publish')
         },
         {
+          // 新建文章
           name: 'article',
           path: '/article',
           component: () => import('@/views/article')
         },
         {
+          // 修改
           name: 'publish-edit',
           path: '/publish/:id',
           component: () => import('@/views/publish')
+        },
+        {
+          // 素材
+          name: 'media',
+          path: '/media',
+          component: () => import('@/views/media')
+        },
+        {
+          // 评论
+          name: 'comment',
+          path: '/comment',
+          component: () => import('@/views/comment')
         }
       ]
     }

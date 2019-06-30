@@ -124,20 +124,20 @@ export default {
             message: '发布成功'
           })
         } else {
-            // 执行修改操作
-            await this.$http({
-              method: 'PUT',
-              url: `/articles/${this.$route.params.id}`,
-              params: { // Query 参数 使用params 传入
-                draft
-              },
-              data: this.articleForm
-            })
-            this.$message({
-              type: 'success',
-              message: '修改成功'
-            })
-          }
+          // 执行修改操作
+          await this.$http({
+            method: 'PUT',
+            url: `/articles/${this.$route.params.id}`,
+            params: { // Query 参数 使用params 传入
+              draft
+            },
+            data: this.articleForm
+          })
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+        }
       } catch (error) {
         this.$message.error('操作错误')
       }

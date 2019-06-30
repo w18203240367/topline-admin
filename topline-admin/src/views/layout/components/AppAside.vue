@@ -28,8 +28,8 @@
         <el-menu-item-group>
           <el-menu-item index="/publish"><i class="iconfont icon-cehuifabuwenjian"></i>发布文件</el-menu-item>
           <el-menu-item index="/article"><i class="iconfont icon-weibiaoti2010101"></i>内容列表</el-menu-item>
-          <el-menu-item index="1-3"><i class="iconfont icon-pinglunguanli"></i>评论管理</el-menu-item>
-          <el-menu-item index="1-4"><i class="iconfont icon-sucaiguanli"></i>素材管理</el-menu-item>
+          <el-menu-item index="/comment"><i class="iconfont icon-pinglunguanli"></i>评论管理</el-menu-item>
+          <el-menu-item index="/media"><i class="iconfont icon-sucaiguanli"></i>素材管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="3">
