@@ -89,6 +89,29 @@ export default {
       editorOption: {} // 富文本绑定的数据
     }
   },
+  /**
+   * 监视
+   * 可以监视实例中的数据成员 当被监视数据发生的变化，就会调用处理函数
+   */
+  // watch: {
+  //   // 监视实例(this)中的 $route， 当route 发生变化。执行这个对应的处理函数
+  //   '$route' (to, from) {
+  //   // 对路由变化作出响应...
+  //   // 从编辑到发布，由于是一个组件，路由会缓存，不会重新创建 所以，这里需要加一个判断
+  //   // 对于当前这个组件来说如果你是从编辑过来的，则会将表单内容清空
+  //     if (from.name === 'publish-edit') {
+  //       this.articleForm = {
+  //         title: '', // 标题
+  //         content: '', // 能容
+  //         cover: { // 封面
+  //           type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
+  //           images: [] //
+  //         },
+  //         channel_id: '' // 频道
+  //       }
+  //     }
+  //   }
+  // },
   created () {
     if (this.$route.name === 'publish-edit') {
       this.loadArticle()
