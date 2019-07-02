@@ -49,6 +49,7 @@ export default {
         console.log(data)
         // 手动造一个数据 disable，用来控制每一行的switch开关的状态
         data.results.forEach(item => {
+          // item.disabled = false
           item.disabled = false
         })
         this.article = data.results

@@ -51,6 +51,12 @@ const router = new Router({
           name: 'comment',
           path: '/comment',
           component: () => import('@/views/comment')
+        },
+        {
+          // 账户管理
+          name: 'account',
+          path: '/account',
+          component: () => import('@/views/account')
         }
       ]
     }

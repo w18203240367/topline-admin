@@ -17,6 +17,8 @@ import { getUser, removeUser } from '@/utils/auth'
 
 import JSONbig from 'json-bigint'
 
+import store from './store'
+
 import axios from 'axios'
 Vue.use(ElementUI)
 
@@ -101,5 +103,6 @@ Vue.prototype.$http = axios
 Vue.config.productionTip = false
 new Vue({
   router,
+  store, // 将store 配入到根实例中， 然后所有组件就可以通过  this.$store 来访问容器中的数据
   render: h => h(App)
 }).$mount('#app')

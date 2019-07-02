@@ -43,7 +43,7 @@
           <el-menu-item index="3-3"><i class="iconfont icon-fensiliebiao"></i>粉丝列表</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="4">
+      <el-menu-item index="/account">
         <i class="iconfont icon-shezhi"></i>
         <span slot="title">账号管理</span>
       </el-menu-item>

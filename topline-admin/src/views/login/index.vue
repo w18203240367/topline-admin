@@ -165,26 +165,26 @@ export default {
           this.$message.error('获取验证码失败'),
           this.codeLoading = false
         }
-      })
-  } catch (err) {
-    this.$message.error('获取验证码失败')
-  this.codeLoading = false
-  }
-  },
-  // 设置倒计时
-  codeCountDown () {
-    this.codeTimer = window.setInterval(() => {
-      this.codeTimeSeconds--  // 计时器每秒减1
-      if (this.codeTimeSeconds <= 0) {
-        // 清除定时器
-        window.clearInterval(this.codeTimer)
-        // 同时让倒计时的时间回归初始状态
-        this.codeTimeSeconds = initCodeTimeSeconds
-        this.codeTimer = null // 将存储定时器引用的变量重新赋值为 null
+        })
+      } catch (err) {
+        this.$message.error('获取验证码失败')
+        this.codeLoading = false
       }
-    }, 1000)
+    },
+    // 设置倒计时
+    codeCountDown () {
+      this.codeTimer = window.setInterval(() => {
+        this.codeTimeSeconds-- // 计时器每秒减1
+        if (this.codeTimeSeconds <= 0) {
+          // 清除定时器
+          window.clearInterval(this.codeTimer)
+          // 同时让倒计时的时间回归初始状态
+          this.codeTimeSeconds = initCodeTimeSeconds
+          this.codeTimer = null // 将存储定时器引用的变量重新赋值为 null
+        }
+      }, 1000)
+    }
   }
-}
 }
 </script>
 
