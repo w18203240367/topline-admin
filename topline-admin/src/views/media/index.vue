@@ -5,10 +5,34 @@
     </div>
     <div class="action">
       <el-radio-group v-model="active">
-        <el-radio-button label="全部"></el-radio-button>
-        <el-radio-button label="收藏"></el-radio-button>
+        <!--
+          组件标签不能使用 @click事件
+          el-button  可以使用@click  实质上他的内部将原生DOM的点击事件做个对外发布 $emit('click' 事件参数)
+
+          如果想要给组件注册一个原生事件 @原生事件.native
+         -->
+        <el-radio-button label="全部" @click.native="loadImages(false)"></el-radio-button>
+        <el-radio-button label="收藏" @click.native="loadImages(true)"></el-radio-button>
     </el-radio-group>
-    <el-button type="primary" style='height: 40px;'>上传图片</el-button>
+    <!--
+      我们可以直接使用 Upload 上传组件进行图片上传
+      Upload 支持自动请求 只需要配置上传的接口
+      如果使用他默认的请求能力 就无法 使用我们在axios 中做得配置 例如：base URL  请求拦截器
+       1. action  请求地址
+       2. header 请求头
+       3. name 字段名称
+     -->
+
+    <el-upload
+      class="upload-demo"
+      action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+      :headers='{ Authorization: `Bearer ${$store.state.user.token}` }'
+      name='image'
+      :show-file-list='false'
+      :on-success='handleUploadSuccess'>
+      <el-button size="small" type="primary">点击上传</el-button>
+      <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+    </el-upload>
     </div>
     <el-row :gutter="20">
       <el-col :span="4" v-for="item in images" :key="item.id">
@@ -80,6 +104,7 @@ export default {
         this.$message.error('加载图片失败')
       }
     },
+    // 删除功能
     async handleDelete (item) {
       try {
         await this.$http({
@@ -94,6 +119,9 @@ export default {
       } catch (err) {
         this.$message.error('删除图片失败')
       }
+    },
+    handleUploadSuccess () {
+      this.loadImages()
     }
   }
 }

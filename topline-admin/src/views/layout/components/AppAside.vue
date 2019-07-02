@@ -38,7 +38,7 @@
           <span>粉丝管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="3-1"><i class="iconfont icon-tuwenguanli"></i>图文数据</el-menu-item>
+          <el-menu-item index="/fans"><i class="iconfont icon-tuwenguanli"></i>图文数据</el-menu-item>
           <el-menu-item index="3-2"><i class="iconfont icon-fensi"></i>粉丝概况</el-menu-item>
           <el-menu-item index="3-3"><i class="iconfont icon-fensiliebiao"></i>粉丝列表</el-menu-item>
         </el-menu-item-group>

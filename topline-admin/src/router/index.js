@@ -57,6 +57,12 @@ const router = new Router({
           name: 'account',
           path: '/account',
           component: () => import('@/views/account')
+        },
+        {
+          // 粉丝管理
+          name: 'fans',
+          path: '/fans',
+          component: () => import('@/views/fans')
         }
       ]
     }
