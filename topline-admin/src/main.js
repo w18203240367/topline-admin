@@ -82,6 +82,7 @@ axios.interceptors.response.use(response => { // >=200 <400 的状态码先进�
     return response.data
   }
 }, error => { // >=400 的状态码先进入这里
+  console.log(error)
   // 如果用户 token 无效，让其跳回登录页面
   if (error.response.status === 401) {
     // 清除本地缓存 token

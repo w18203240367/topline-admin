@@ -17,7 +17,7 @@
           <div style="padding: 10px;">
             <div class="bottom clearfix icon">
               <el-button plain type="primary" :icon="item.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'" circle @click="hanleCollect(item)"></el-button>
-              <el-button plain type="primary" icon="el-icon-delete" circle></el-button>
+              <el-button plain type="primary" icon="el-icon-delete" circle @click="handleDelete(item)"></el-button>
             </div>
           </div>
         </el-card>
@@ -57,7 +57,7 @@ export default {
 
         this.$message({
           type: 'success',
-          message: `$ { collect ? '' : '取消'}收藏成功`
+          message: `${collect ? '' : '取消'}收藏成功`
         })
       } catch (err) {
         this.$message.error('收藏失败')
@@ -78,6 +78,21 @@ export default {
         this.images = data.results
       } catch (err) {
         this.$message.error('加载图片失败')
+      }
+    },
+    async handleDelete (item) {
+      try {
+        await this.$http({
+          method: 'DELETE',
+          url: `/user/images/${item.id}`
+        })
+        this.loadImages()
+        this.$message({
+          type: 'success',
+          message: '删除成功'
+        })
+      } catch (err) {
+        this.$message.error('删除图片失败')
       }
     }
   }
